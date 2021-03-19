@@ -20,4 +20,4 @@ jobs:
     - name: Runs XT tests
       uses: JJ/raku-container-action@master
       with:
-        entrypoint: zef install App::Prove6 && prove6 xt
+        entrypoint: .github/workflows/run-xt-tests-ubuntu.sh
