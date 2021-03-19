@@ -16,5 +16,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v1
     - name: Runs tests
-      id: tests
       uses: JJ/raku-container-action@master
+    - name: Runs XT tests
+      uses: JJ/raku-container-action@master
+      with:
+        entrypoint: prove6 xt
