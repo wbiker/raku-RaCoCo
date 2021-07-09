@@ -8,7 +8,7 @@ use App::Racoco::Paths;
 use App::Racoco::TmpDir;
 use App::Racoco::Fixture;
 
-plan 49;
+plan 47;
 
 my $lib = Fixture::root-folder.add('lib-for-report');
 my $mod = 'RootModule.rakumod';
@@ -44,10 +44,10 @@ sub check-page($file-name, $page-name, :$color-blind = False) {
        "$page-name line$line ok";
   }
   if $color-blind {
-    nok $content.contains('color-blind'), "$page-name color-blind";
+    ok $content.contains('background-color: #00CED1'), "$page-name color-blind";
+  } else {
+    nok $content.contains('background-color: #00CED1'), "$page-name color-blind";
   }
-
-  nok $content ~~ /'%%'/, $page-name ~ ' has no placeholders';
 }
 
 sub check-main-page($content, $file-name, $page-name) {
@@ -95,7 +95,6 @@ do-test {
   check-main-page($main-content, $mod, 'RootModule');
   check-main-page($main-content, $mod1, 'RootModule-SubModule1');
   check-main-page($main-content, $mod2, 'RootModule-SubModule2');
-  nok $main-content ~~ /'%%'/, 'main page has no placeholders';
 };
 
 do-test {

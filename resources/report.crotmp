@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>RaCoCo result: %%project-name%%</title>
+	<title>RaCoCo result: <.project-name></title>
 	<link rel="stylesheet"
 				href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
 				integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
@@ -48,7 +48,7 @@
 	<div class="row mt-5 mb-3">
 		<div class="col-md-12">
 			<div class="page-header">
-				<h1>%%project-name%%</h1>
+				<h1><.project-name></h1>
 			</div>
 		</div>
 	</div>
@@ -91,10 +91,22 @@
 				</tr>
 				</thead>
 				<tbody>
-%%report-lines%%
+				    <@modules>
+    				    <tr class="report">
+                            <td><a href="./report-data/<.link>"><.module-name></a></td>
+                            <td><.percent></td>
+                            <td>
+                                <span class="progress-bar">
+                                    <span class="progress-bar-fill" style="width: <.percent>%;"></span>
+                                </span>
+                            </td>
+                            <td class="total"><.coverable></td>
+                            <td class="covered"><.covered></td>
+                        </tr>
+                    </@>
 				</tbody>
 			</table>
-			<p class="err">No results were found...</p>
+			<p class="err"></p>
 		</div>
 	</div>
 </div>

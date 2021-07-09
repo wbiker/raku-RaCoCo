@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>RaCoCo result: %%module-name%%</title>
+	<title>RaCoCo result: <.module-name></title>
 	<link rel="stylesheet"
 				href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
 				integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
@@ -22,9 +22,9 @@
 
       .coverage-green {
           background-color: #32CD32;
-          /*color-blind
+          <?.color-blind>
           background-color: #00CED1;
-          /**/
+          </?>
       }
 
       .coverage-red {
@@ -41,14 +41,14 @@
 	<div class="row mt-5 mb-3">
 		<div class="col-12">
 			<div class="page-header">
-				<h1>%%module-name%% %%module-coverage%%%</h1>
+				<h1><.module-name> <.percent></h1>
 			</div>
 		</div>
 	</div>
 	<div class="row justify-content-md-center">
 		<div class="col-md-10">
 			<pre class="code">
-%%pre%%
+<&HTML(.pre)>
 			</pre>
 		</div>
 	</div>

@@ -40,14 +40,20 @@ class CoveredLinesCollector is export {
     return %{} unless $!coverage-log-path.e;
     my $prefix = 'HIT  ' ~ $!lib;
     my $prefix-len = $prefix.chars + '/'.chars;
-    $!coverage-log-path.lines
-      .grep(*.starts-with($prefix))
-      .map(*.substr($prefix-len))
-      .unique
-      .map(-> $h { .[0] => .[2] with $h.words})
-      .classify({ $_.key })
-      .map({ $_.key => $_.value.map(*.value.Int).Set })
-      .Hash
+    my @t = $!coverage-log-path.lines .grep(*.starts-with($prefix));
+    dd @t[0];
+      my @tt = @t.map(*.substr($prefix-len));
+    dd @tt[0];
+      my @t_unique = @tt.unique;
+      my @t_t = @t_unique.map(-> $h { .[0] => .[2] with $h.words});
+    dd @t_t[0];
+      my @tc = @t_t.classify({ $_.key });
+    dd @tc[0];
+      my @tm = @tc.map({ $_.key => $_.value.map(*.value.Int).Set });
+    dd @tm[0];
+      my %result = @tm.Hash;
+
+      return %result;
   }
 }
 

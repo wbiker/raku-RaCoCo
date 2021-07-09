@@ -1,5 +1,7 @@
 unit module App::Racoco::Report::ReporterHtml;
 
+use Cro::WebApp::Template;
+
 use App::Racoco::Report::Report;
 use App::Racoco::Report::Reporter;
 use App::Racoco::Report::ReporterBasic;
@@ -39,37 +41,38 @@ class ReporterHtml does Reporter is export {
   }
 
   method !write-module-pages(--> Associative) {
-    my $template = %?RESOURCES<report-file.html>.slurp;
-    $!reporter.report.all-data.map(-> $data {
+    my $template = %?RESOURCES<report-file.crotmp>.IO;
+    return $!reporter.report.all-data.map(-> $data {
       $data.file-name => self!write-module-page($data, $template)
-    }).Map
+    }).Map;
   }
 
   method !write-main-page(%module-links --> IO::Path) {
+    my %data = project-name => project-name(:$!lib);
+    %data<modules> = self!code-main-page-content(%module-links);
+    my $template = %?RESOURCES<report.crotmp>.IO;
+    my $content = render-template($template, %data);
+
     my $path = report-html-path(:$!lib);
-    my $template = %?RESOURCES<report.html>.slurp;
-
-    $template .= subst('%%report-lines%%', self!code-main-page-content(%module-links));
-    $template .= subst('%%project-name%%', project-name(:$!lib), :g);
-
-    $path.spurt: $template;
-    $path
+    $path.spurt: $content;
+    return $path;
   }
 
   method !write-main-page-url() {
     say "Visualisation: file://", report-html-path(:$!lib).Str
   }
 
-  method !write-module-page(FileReportData $data, Str $template is copy--> Str) {
-    my $path = report-html-data-path(:$!lib)
-      .add(self!module-page-name($data.file-name));
+  method !write-module-page(FileReportData $data, IO $template is copy--> Str) {
+    my $path = report-html-data-path(:$!lib) .add(self!module-page-name($data.file-name));
 
-    $template .= subst('%%pre%%', self!code-module-content($data));
-    $template .= subst('%%module-name%%', module-name(:path($data.file-name)), :g);
-    $template .= subst('%%module-coverage%%', $data.percent);
-    $template .= subst('/*color-blind', '') if $!color-blind;
+    my %data;
+    %data<pre> = self!code-module-content($data);
+    %data<module-name> = module-name(:path($data.file-name));
+    %data<percent> = $data.percent;
+    %data<color-blind> = $!color-blind;
 
-    $path.spurt: $template;
+    my $result = render-template $template, %data;
+    $path.spurt: $result;
     $path.Str.substr(report-html-data-path(:$!lib).Str.chars + '/'.chars)
   }
 
@@ -77,33 +80,22 @@ class ReporterHtml does Reporter is export {
     module-parts(path => $file-name.IO).join('-') ~ '.html'
   }
 
-  method !code-main-page-content(%module-links --> Str) {
-    $!reporter.report.all-data.map(-> $data {
+  method !code-main-page-content(%module-links --> Array) {
+    return $!reporter.report.all-data.map(-> $data {
       self!code-main-page-module-content($data, %module-links);
-    }).join("\n")
+    }).Array;
   }
 
-  method !code-main-page-module-content(FileReportData $data, %module-links --> Str) {
-    my $template = q:to/END/;
-    <tr class="report">
-    <td><a href="./report-data/%%link%%">%%module-name%%</a></td>
-    <td>%%percent%%</td>
-    <td>
-    <span class="progress-bar">
-    <span class="progress-bar-fill" style="width: %%percent%%%;"></span>
-    </span>
-    </td>
-    <td class="total">%%coverable%%</td>
-    <td class="covered">%%covered%%</td>
-    </tr>
-    END
-    $template .= subst('%%link%%', %module-links{$data.file-name});
-    $template .= subst('%%module-name%%', module-name(path => $data.file-name.IO));
-    $template .= subst('%%percent%%', $data.percent);
-    $template .= subst('%%percent%%', $data.percent);
-    $template .= subst('%%coverable%%', $data.coverable);
-    $template .= subst('%%covered%%', $data.covered);
-    $template.lines.join('')
+  method !code-main-page-module-content(FileReportData $data, %module-links --> Associative) {
+      my %data;
+
+      %data<link> = %module-links{$data.file-name};
+      %data<module-name> = module-name(path => $data.file-name.IO);
+      %data<percent> = $data.percent;
+      %data<coverable> = $data.coverable;
+      %data<covered> = $data.covered;
+
+      return %data;
   }
 
   method !code-module-content(FileReportData $data --> Str) {
