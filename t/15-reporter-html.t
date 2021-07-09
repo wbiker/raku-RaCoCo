@@ -8,7 +8,7 @@ use App::Racoco::Paths;
 use App::Racoco::TmpDir;
 use App::Racoco::Fixture;
 
-plan 47;
+plan 51;
 
 my $lib = Fixture::root-folder.add('lib-for-report');
 my $mod = 'RootModule.rakumod';
@@ -45,7 +45,9 @@ sub check-page($file-name, $page-name, :$color-blind = False) {
   }
   if $color-blind {
     ok $content.contains('background-color: #00CED1'), "$page-name color-blind";
+    nok $content.contains('background-color: #32CD32'), "$page-name color-blind";
   } else {
+    ok $content.contains('background-color: #32CD32'), "$page-name color-blind";
     nok $content.contains('background-color: #00CED1'), "$page-name color-blind";
   }
 }

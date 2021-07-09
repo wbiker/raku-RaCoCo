@@ -21,7 +21,9 @@
       }
 
       .coverage-green {
+          <!.color-blind>
           background-color: #32CD32;
+          </!>
           <?.color-blind>
           background-color: #00CED1;
           </?>
